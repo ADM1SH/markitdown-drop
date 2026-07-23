@@ -27,7 +27,7 @@
 | :--- | :--- | :--- |
 | **Office Documents** | `.docx`, `.pptx`, `.xlsx`, `.xls` | Retains headings, bullet lists, tables & layout structure |
 | **PDF Documents** | `.pdf` | Extracts text layout, headings, and tabular contents |
-| **Images** | `.jpg`, `.jpeg`, `.png` | Extracts EXIF metadata & image OCR |
+| **Images** | `.jpg`, `.jpeg`, `.png` | Extracts EXIF metadata (via `exiftool`) — no OCR text extraction |
 | **Audio Files** | `.wav`, `.mp3` | Audio speech-to-text transcription |
 | **Structured Data** | `.csv`, `.json`, `.xml`, `.html` | Formats data into readable Markdown tables & code blocks |
 | **Archives & E-Books**| `.zip`, `.epub`, `.msg` | Unpacks files recursively & converts contained docs |

@@ -1,5 +1,3 @@
 #!/bin/bash
-# Find real directory of the app bundle
-APP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../../.." && pwd )"
-cd "$APP_DIR"
+cd "/Users/adamanwar/Desktop/Coding Projects/markitdown-drop"
 exec ./run.sh

@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, jsonify
 from markitdown import MarkItDown
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
+app.config["MAX_CONTENT_LENGTH"] = 200 * 1024 * 1024  # 200MB upload cap
 
 # Initialize MarkItDown converter
 try:
