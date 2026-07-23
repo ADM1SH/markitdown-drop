@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkItDown Drop - Drag & Drop File to Markdown Converter</title>
+    <meta name="description" content="A simple, powerful drag-and-drop macOS web tool to convert Office documents, PDFs, images, and media into clean Markdown using Microsoft MarkItDown.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Marked.js for rendering markdown in browser preview -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>MarkItDown <span>Drop</span></h1>
+                    <p class="subtitle">Convert PDF, Office, Images & Media to Markdown instantly</p>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <a href="https://github.com/microsoft/markitdown" target="_blank" rel="noopener" class="btn btn-secondary">
+                    <i class="fa-brands fa-github"></i> Powered by MarkItDown
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Left Side / Top: Drag & Drop Zone + Supported Formats -->
+            <section class="upload-section">
+                <div id="drop-zone" class="drop-zone">
+                    <input type="file" id="file-input" class="file-input" multiple>
+                    
+                    <div class="drop-zone-content">
+                        <div class="upload-icon-wrapper">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        </div>
+                        <h2>Drag & Drop files here</h2>
+                        <p>or <span class="browse-link">browse files</span> from your computer</p>
+                        
+                        <div class="badge-group">
+                            <span class="badge"><i class="fa-solid fa-file-pdf"></i> PDF</span>
+                            <span class="badge"><i class="fa-solid fa-file-word"></i> Word</span>
+                            <span class="badge"><i class="fa-solid fa-file-powerpoint"></i> PPT</span>
+                            <span class="badge"><i class="fa-solid fa-file-excel"></i> Excel</span>
+                            <span class="badge"><i class="fa-solid fa-file-image"></i> Images</span>
+                            <span class="badge"><i class="fa-solid fa-file-audio"></i> Audio</span>
+                            <span class="badge"><i class="fa-solid fa-file-lines"></i> HTML / CSV / JSON</span>
+                        </div>
+                    </div>
+                    
+                    <div id="upload-overlay" class="upload-overlay hidden">
+                        <i class="fa-solid fa-spinner fa-spin spinner"></i>
+                        <p id="upload-status-text">Converting file to Markdown...</p>
+                    </div>
+                </div>
+
+                <!-- Recent Conversions / File Selector Queue -->
+                <div id="queue-container" class="queue-container hidden">
+                    <div class="queue-header">
+                        <h3><i class="fa-solid fa-list-check"></i> Converted Files</h3>
+                        <button id="clear-queue-btn" class="btn-text"><i class="fa-solid fa-trash-can"></i> Clear</button>
+                    </div>
+                    <ul id="file-queue-list" class="file-queue-list"></ul>
+                </div>
+            </section>
+
+            <!-- Right Side / Bottom: Result & Preview Pane -->
+            <section id="result-section" class="result-section empty-state">
+                <!-- Empty Placeholder state -->
+                <div id="empty-preview" class="empty-preview">
+                    <div class="empty-icon"><i class="fa-solid fa-code"></i></div>
+                    <h3>No document converted yet</h3>
+                    <p>Drop any supported file on the left to generate clean Markdown text for LLMs and notes.</p>
+                </div>
+
+                <!-- Active Conversion Result Container -->
+                <div id="active-result" class="active-result hidden">
+                    <div class="result-header">
+                        <div class="file-info">
+                            <i id="file-type-icon" class="fa-solid fa-file-lines file-icon"></i>
+                            <div>
+                                <h3 id="current-filename">document.md</h3>
+                                <span id="current-file-meta" class="file-meta">0 KB</span>
+                            </div>
+                        </div>
+
+                        <!-- Tab controls (Raw Markdown / Rendered HTML) -->
+                        <div class="view-tabs">
+                            <button id="tab-raw" class="tab-btn active" data-tab="raw">
+                                <i class="fa-solid fa-code"></i> Raw Markdown
+                            </button>
+                            <button id="tab-preview" class="tab-btn" data-tab="preview">
+                                <i class="fa-solid fa-eye"></i> Rendered Preview
+                            </button>
+                        </div>
+
+                        <div class="result-actions">
+                            <button id="copy-btn" class="btn btn-primary" title="Copy Markdown to Clipboard">
+                                <i class="fa-regular fa-copy"></i> <span id="copy-text">Copy</span>
+                            </button>
+                            <button id="download-btn" class="btn btn-success" title="Download .md file">
+                                <i class="fa-solid fa-download"></i> Download .md
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="result-body">
+                        <!-- Raw Markdown Textarea / Code view -->
+                        <div id="view-raw-container" class="tab-content active">
+                            <textarea id="markdown-output" readonly placeholder="Converted Markdown will appear here..."></textarea>
+                        </div>
+
+                        <!-- Rendered HTML View -->
+                        <div id="view-preview-container" class="tab-content markdown-rendered hidden">
+                            <div id="rendered-output"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>MarkItDown Drop &bull; Simple Drag-and-Drop Markdown Tool for Mac</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
