@@ -1,130 +1,118 @@
-# 📄 MarkItDown Drop
+# MarkItDown Drop
 
-> **A sleek, drag-and-drop macOS desktop web tool to convert PDF, Word, PowerPoint, Excel, Images, and Audio into clean Markdown using Microsoft's MarkItDown.**
+A drag-and-drop web tool that converts documents into Markdown. It runs a local Flask server and uses the Microsoft `markitdown` library. It accepts PDF, Word, PowerPoint, Excel, images, audio, and structured data files.
 
-![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey.svg)
-![Powered By](https://img.shields.io/badge/powered%20by-Microsoft%20MarkItDown-0078D4.svg)
 
----
+## Features
 
-## ✨ Features
+- **Drag and drop.** Drop a supported file onto the target zone.
+- **Split view.** The raw Markdown sits beside a rendered HTML preview.
+- **One-click actions.** Copy the result to the clipboard, or download it as a `.md` file.
+- **Batch queue.** Convert several files in one batch, then move between the results.
+- **Dark theme.** A glassmorphism interface written in vanilla CSS.
+- **Local only.** The server runs on `127.0.0.1`. No file leaves the machine.
 
-- 🎯 **Drag & Drop Upload Zone**: Simply drag any supported file or document onto the drop target.
-- 📑 **Wide Format Support**: Handles PDF, DOCX, PPTX, XLSX, XLS, CSV, JSON, XML, HTML, EPub, Images (EXIF + OCR), and Audio (transcription).
-- 👁️ **Live Split View**: Side-by-side view with **Raw Markdown** code editor and **Rendered HTML Preview**.
-- 📋 **One-Click Actions**: Instant copy to clipboard and `.md` file download.
-- 🗂️ **Batch Conversion Queue**: Convert multiple files in a batch and toggle seamlessly between results.
-- 🎨 **Glassmorphism Dark Theme**: Premium macOS-native dark mode user interface built with vanilla CSS.
-- ⚡ **Zero External Heavy Dependencies**: Fast local Python backend server powered by Flask & Microsoft `markitdown`.
+## Supported formats
 
----
+`app.py` holds the authoritative list in `SUPPORTED_EXTENSIONS`.
 
-## 📊 Supported File Formats
+| Category | Extensions | Result |
+| --- | --- | --- |
+| Office documents | `.docx`, `.pptx`, `.xlsx`, `.xls` | Keeps headings, bullet lists, tables, and layout structure |
+| PDF | `.pdf` | Extracts text, headings, and tabular content |
+| Images | `.jpg`, `.jpeg`, `.png` | Extracts EXIF metadata |
+| Audio | `.wav`, `.mp3` | Speech-to-text transcription |
+| Structured data | `.csv`, `.json`, `.xml`, `.html`, `.htm` | Formats the data as Markdown tables and code blocks |
+| Text | `.txt`, `.md` | Passes the text through |
+| Archives and email | `.zip`, `.epub`, `.msg` | Unpacks the container and converts what it holds |
 
-| Category | File Extensions | Conversion Details |
-| :--- | :--- | :--- |
-| **Office Documents** | `.docx`, `.pptx`, `.xlsx`, `.xls` | Retains headings, bullet lists, tables & layout structure |
-| **PDF Documents** | `.pdf` | Extracts text layout, headings, and tabular contents |
-| **Images** | `.jpg`, `.jpeg`, `.png` | Extracts EXIF metadata (via `exiftool`) — no OCR text extraction |
-| **Audio Files** | `.wav`, `.mp3` | Audio speech-to-text transcription |
-| **Structured Data** | `.csv`, `.json`, `.xml`, `.html` | Formats data into readable Markdown tables & code blocks |
-| **Archives & E-Books**| `.zip`, `.epub`, `.msg` | Unpacks files recursively & converts contained docs |
+Note: image conversion returns EXIF metadata. It does not read text out of the picture. Text extraction from an image needs an LLM client that this build does not configure.
 
----
+## Prerequisites
 
-## 🚀 Quick Start (macOS)
+- Python 3.10 or later.
+- macOS, Linux, or Windows.
 
-### 1. One-Command Launch
-Simply open your Terminal and run the launcher script:
+## Quick start
+
+Run the launcher script:
 
 ```bash
-cd markitdown-drop
 ./run.sh
 ```
 
-The script will automatically create a Python virtual environment, install the required dependencies (`markitdown[all]` and `flask`), launch the server on `http://127.0.0.1:5050`, and open your browser automatically.
+The script creates a virtual environment in `.venv`, installs the dependencies, starts the server on `http://127.0.0.1:5050`, and opens a browser.
 
----
+## Manual install
 
-## 🛠️ Manual Installation & Setup
+1. Create and activate a virtual environment:
 
-If you prefer to set up manually:
-
-1. **Clone or navigate to the repository:**
-   ```bash
-   git clone https://github.com/your-username/markitdown-drop.git
-   cd markitdown-drop
-   ```
-
-2. **Create and activate virtual environment:**
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
 
-3. **Install dependencies:**
+2. Install the dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Run the application:**
+3. Start the server:
+
    ```bash
    python app.py
    ```
-   Open `http://127.0.0.1:5050` in your web browser.
 
----
+4. Open `http://127.0.0.1:5050`.
 
-## 📂 Project Structure
+To use a different port, set `PORT` before you start the server:
 
-```
-markitdown-drop/
-├── app.py              # Flask server & MarkItDown conversion endpoints
-├── requirements.txt    # Python package dependencies
-├── run.sh              # One-click macOS bash launcher script
-├── static/
-│   ├── app.js          # Drag & drop logic, fetch API, previewer & tab controls
-│   └── style.css       # Glassmorphism dark mode CSS design system
-├── templates/
-│   └── index.html      # HTML5 app interface
-├── .gitignore          # Git ignore rules for Python & macOS
-├── LICENSE             # MIT License
-└── README.md           # Documentation
+```bash
+PORT=8080 python app.py
 ```
 
----
+## Dependencies
 
-## 📤 How to Push to Your GitHub Account
+`requirements.txt` pins these packages:
 
-To host this repository under your personal GitHub profile:
+```
+markitdown[docx,pptx,xlsx,xls,pdf,outlook,audio-transcription]>=0.1.6
+flask>=3.0.0
+audioop-lts; python_version >= "3.13"
+```
 
-1. **Create a new empty repository on GitHub**:
-   - Go to [github.com/new](https://github.com/new)
-   - Name it `markitdown-drop`
-   - Do NOT check "Initialize with README" (since we already created one).
+The extras list decides which converters exist. If you add a format, add its extra here as well.
 
-2. **Initialize Git and push from your Mac terminal**:
-   ```bash
-   cd "/Users/adamanwar/Desktop/Coding Projects/markitdown-drop"
-   
-   git init
-   git add .
-   git commit -m "Initial commit: MarkItDown Drop drag and drop converter"
-   git branch -M main
-   git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/markitdown-drop.git
-   git push -u origin main
-   ```
+## API
 
----
+| Method and path | Purpose |
+| --- | --- |
+| `GET /` | Serve the interface |
+| `GET /api/formats` | Return the supported extension map |
+| `POST /api/convert` | Accept an upload and return Markdown |
 
-## 🤝 Contributing
+## Project structure
 
-Contributions, issues, and feature requests are welcome! Feel free to check out the [Issues page](https://github.com/microsoft/markitdown/issues) for underlying MarkItDown capabilities.
+```
+app.py                              Flask server and conversion endpoints
+requirements.txt                    Python dependencies
+run.sh                              macOS launcher script
+static/app.js                       Drag and drop logic, fetch calls, preview, tabs
+static/style.css                    Dark theme design system
+templates/index.html                Interface markup
+MarkItDown Drop.app/                macOS application bundle that calls run.sh
+LICENSE                             MIT
+```
 
----
+## Notes
 
-## 📜 License
+`app.py` runs Flask with `debug=True`. This is correct for local use.
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+CAUTION: Do not expose this server to a network while `debug=True` is set. The Werkzeug debugger runs code that a request sends it. Set `debug=False` and bind a real WSGI server first.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
